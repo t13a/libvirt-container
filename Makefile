@@ -15,17 +15,6 @@ VOLUMES := libvirt_conf libvirt_data ssh_conf
 .PHONY: all
 all: build
 
-.PHONY: up
-up: ARGS = -d --build
-up:
-	docker-compose up $(ARGS)
-
-.PHONY: exec
-exec: CMD = sudo -u $(SSH_USER) -i
-exec: ARGS = libvirt $(CMD)
-exec:
-	docker-compose exec $(ARGS)
-
 include test.mk
 
 .PHONY: clean
@@ -36,5 +25,8 @@ clean:
 	rm -rf $(OUT_DIR)
 
 .PHONY: %
+exec: CMD = sudo -u $(SSH_USER) -i
+exec: ARGS = libvirt $(CMD)
+up: ARGS = -d --build
 %:
 	docker-compose $@ $(ARGS)
