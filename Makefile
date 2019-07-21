@@ -2,7 +2,7 @@ OUT_DIR := out
 
 export COMPOSE_PROJECT_NAME := libvirt
 
-export LIBVIRT_IMAGE := libvirt
+export IMAGE := libvirt
 
 export SSH_AUTHORIZED_KEYS := $(shell cat ~/.ssh/id_rsa.pub)
 export SSH_GID := $(shell id -g)
@@ -20,7 +20,7 @@ include test.mk
 .PHONY: clean
 clean:
 	docker-compose rm -fsv
-	docker image rm -f $(LIBVIRT_IMAGE)
+	docker image rm -f $(IMAGE)
 	docker volume rm -f $(foreach _,$(VOLUMES),$(addprefix $(COMPOSE_PROJECT_NAME)_,$(_)))
 	rm -rf $(OUT_DIR)
 

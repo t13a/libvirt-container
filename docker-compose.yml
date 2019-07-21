@@ -7,7 +7,7 @@ services:
       SSH_GID: '${SSH_GID}'
       SSH_UID: '${SSH_UID}'
       SSH_USER: '${SSH_USER}'
-    image: ${LIBVIRT_IMAGE}
+    image: ${IMAGE}
     ports:
     - ${SSH_HOST_PORT}:22
     privileged: true
