@@ -1,6 +1,6 @@
 PRINT = @echo -e "\e[1;34m"[test] $(1)"\e[0m"
 
-SSH_DIR := ssh
+SSH_DIR := $(OUT_DIR)/ssh
 SSH_KEY := $(SSH_DIR)/id_rsa
 SSH_KEY_PUB := $(SSH_DIR)/id_rsa.pub
 SSH_OPTIONS := \
@@ -83,8 +83,3 @@ scp-test-script:
 $(TEST_TARGETS):
 	$(call PRINT,Running test '$(@:$(TEST_TARGET_PREFIX)%=%)'...)
 	$(call SSH_CMD,env TIMEOUT_SECS=$(TIMEOUT_SECS) ~/$(TEST_SCRIPT) $(@:$(TEST_TARGET_PREFIX)%=%))
-
-CLEAN_TARGETS += test-clean
-.PHONY: test-clean
-test-clean:
-	rm -rf $(SSH_DIR)

@@ -1,3 +1,5 @@
+OUT_DIR := out
+
 export COMPOSE_PROJECT_NAME := libvirt
 
 export LIBVIRT_IMAGE := libvirt
@@ -9,7 +11,6 @@ export SSH_UID := $(shell id -u)
 export SSH_USER := $(shell id -nu)
 
 VOLUMES := libvirt_conf libvirt_data ssh_conf
-VOLUME_NAME = $(addprefix $(COMPOSE_PROJECT_NAME)_,$(1))
 
 .PHONY: all
 all: build
@@ -28,10 +29,11 @@ exec:
 include test.mk
 
 .PHONY: clean
-clean: $(CLEAN_TARGETS)
+clean:
 	docker-compose rm -fsv
 	docker image rm -f $(LIBVIRT_IMAGE)
-	docker volume rm -f $(foreach _,$(VOLUMES),$(call VOLUME_NAME,$(_)))
+	docker volume rm -f $(foreach _,$(VOLUMES),$(addprefix $(COMPOSE_PROJECT_NAME)_,$(_)))
+	rm -rf $(OUT_DIR)
 
 .PHONY: %
 %:
