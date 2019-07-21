@@ -15,7 +15,7 @@ VOLUME_NAME = $(addprefix $(COMPOSE_PROJECT_NAME)_,$(1))
 all: build
 
 .PHONY: up
-up: ARGS = --detach --build
+up: ARGS = -d --build
 up:
 	docker-compose up $(ARGS)
 

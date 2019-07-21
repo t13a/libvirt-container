@@ -44,7 +44,7 @@ test: test-up test-up-wait scp-ssh-key scp-ssh-key-pub scp-test-script $(TEST_TA
 test-up: SSH_AUTHORIZED_KEYS = $(shell cat $(SSH_KEY_PUB))
 test-up: $(SSH_DIR)
 	$(call PRINT,Bringing up test container...)
-	docker-compose up --detach --build
+	docker-compose up -d --build
 
 .PHONY: test-up-wait
 test-up-wait:
