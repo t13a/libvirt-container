@@ -67,7 +67,7 @@ function cmd_create_machine() {
         --os-type linux
         --boot hd
         --disk path="${DISK_QCOW2}",format=qcow2
-        --disk path="${CIDATA_ISO}",perms=ro
+        --disk path="${CIDATA_ISO}"
         --network bridge="${NETWORK_BRIDGE_NAME}",mac="${MACHINE_MAC}"
         --graphics none
         --noautoconsole
