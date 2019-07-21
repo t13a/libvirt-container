@@ -87,7 +87,7 @@ function cmd_create_machine() {
 function cmd_wait_login_prompt() {
     expect << EOF
 
-set timeout ${TIMEOUT_SECS}
+set timeout ${TIMEOUT_SECS:-600}
 
 spawn virsh --connect=qemu:///system console ${MACHINE_NAME}
 
@@ -122,12 +122,27 @@ EOF
 }
 
 function cmd_connect_via_ssh() {
-    ssh \
+    local interval_secs=1
+    local max_retry=60
+    local retry=0
+
+    while ! ssh \
         -i "${SSH_KEY}" \
         -o StrictHostKeyChecking=no \
         -o UserKnownHostsFile=/dev/null \
         "ubuntu@${MACHINE_ADDRESS}" \
         cat /etc/os-release
+    do
+        if [ ${retry} -le ${max_retry} ]
+        then
+            retry=$((${retry} + 1))
+            echo "Failed (${retry}/${max_retry}), retry after ${interval_secs} second(s)..." >&2
+            sleep ${interval_secs}
+        else
+            echo "Failed" >&2
+            return 1
+        fi
+    done
 }
 
 NETWORK_NAME=default
