@@ -67,7 +67,7 @@ $ make clean
 
 ### Test
 
-We will actually provision a [Ubuntu 16.04 LTS (Xenial Xerus)](https://cloud-images.ubuntu.com/xenial/) instance and login via SSH.
+We will actually provision an [Ubuntu 16.04 LTS (Xenial Xerus)](https://cloud-images.ubuntu.com/xenial/) instance and login via SSH.
 
 ```bash
 $ make all test
