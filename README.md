@@ -1,8 +1,72 @@
 # Libvirt
 
-A Dockerfile for [Libvirt](https://libvirt.org/).
+[![Build Status](https://travis-ci.org/t13a/dockerfile-libvirt.svg?branch=master)](https://travis-ci.org/t13a/dockerfile-libvirt)
+
+A Dockerfile for [Libvirt](https://libvirt.org/). A disposable virtualization infrastructure intended for development. **Do not use for production**.
+
+- Based on the [official build of CentOS](https://hub.docker.com/_/centos)
+- Use [Supervisor](http://supervisord.org/) instead of [Systemd](https://freedesktop.org/wiki/Software/systemd/)
+- Use [KVM](https://www.linux-kvm.org/page/Main_Page) if available
+- Connect via SSH
+
+## Prerequisites
+
+- Docker Compose 1.13+
+- GNU Make
+- KVM enabled Linux (optional)
+- OpenSSH
+
+## Getting started
+
+### Setup
+
+Currently, SSH is the only way to communicate with the container. Password authentication can not be used. Please prepare a valid SSH key in advance. By default, the valid SSH public key is assumed to be in `~/.ssh/id_rsa.pub`. If so, setup the container is very easy.
+
+```
+$ make up
+```
+
+To specify another location, override `SSH_AUTHORIZED_KEYS` environment variable.
+
+```
+$ make SSH_AUTHORiZED_KEYS="$(cat path/to/pub-key)" up
+```
 
 
-## References
+### Connect to Libvirt
 
-- [Official CentOS systemd docker container](https://github.com/CentOS/CentOS-Dockerfiles/tree/master/systemd/centos7)
+There are several ways to connect to Libvirt. The simplest way is to login via SSH and run virsh (Libvirt management CLI).
+
+```
+$ ssh -p 2222 127.0.0.1 virsh --connect=qemu:///system
+```
+
+Or, if virsh is installed on your computer, the following command is equivalent to the above.
+
+```
+$ virsh --connect=qemu+ssh://127.0.0.1:2222/system
+```
+
+### Teardown
+
+To stop the container, execute the following command.
+
+```
+$ make down
+```
+
+You can return to the previous state by executing `make up` command again.
+
+To erase everything including Docker image and volumes, execute the following command.
+
+```
+$ make clean
+```
+
+## Development
+
+### Test
+
+```
+$ make all test
+```

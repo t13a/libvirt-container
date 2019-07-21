@@ -1,0 +1,21 @@
+version: '3'
+services:
+  libvirt:
+    build: .
+    environment:
+      SSH_AUTHORIZED_KEYS: '${SSH_AUTHORIZED_KEYS}'
+      SSH_GID: '${SSH_GID}'
+      SSH_UID: '${SSH_UID}'
+      SSH_USER: '${SSH_USER}'
+    image: ${LIBVIRT_IMAGE}
+    ports:
+    - ${SSH_HOST_PORT}:22
+    privileged: true
+    volumes:
+    - libvirt_conf:/etc/libvirt
+    - libvirt_data:/var/lib/libvirt
+    - ssh_conf:/etc/ssh
+volumes:
+  libvirt_conf:
+  libvirt_data:
+  ssh_conf:

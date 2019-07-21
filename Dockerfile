@@ -1,31 +1,23 @@
 FROM centos:7
 
-# @ref https://hub.docker.com/r/centos/systemd
-RUN rm -f /lib/systemd/system/sysinit.target.wants/systemd-tmpfiles-setup.service \
-    && rm -f /lib/systemd/system/multi-user.target.wants/* \
-    && rm -f /etc/systemd/system/*.wants/* \
-    && rm -f /lib/systemd/system/local-fs.target.wants/* \
-    && rm -f /lib/systemd/system/sockets.target.wants/*udev* \
-    && rm -f /lib/systemd/system/sockets.target.wants/*initctl* \
-    && rm -f /lib/systemd/system/basic.target.wants/* \
-    && rm -f /lib/systemd/system/anaconda.target.wants/*
-
-RUN yum -y install \
+RUN yum -y install epel-release \
+    && yum -y install \
+        expect \
+        less \
         libvirt-daemon-kvm \
+        openssh-clients \
         openssh-server \
         rsync \
         socat \
         sudo \
+        supervisor \
         virt-install \
-    && yum clean all \
-    && systemctl enable libvirtd.service sshd.service
+    && yum clean all
 
 COPY rootfs /
 
 ENV SSH_USER=user
 ENV SSH_UID=1000
 ENV SSH_GID=1000
-
-VOLUME /sys/fs/cgroup
 
 ENTRYPOINT ["/entrypoint.sh"]
