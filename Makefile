@@ -25,8 +25,8 @@ clean:
 	rm -rf $(OUT_DIR)
 
 .PHONY: %
-exec: CMD = sudo -u $(SSH_USER) -i
-exec: ARGS = libvirt $(CMD)
+exec: CMD = bash
+exec: ARGS = -u $(SSH_USER) libvirt $(CMD)
 up: ARGS = -d --build
 %:
 	docker-compose $@ $(ARGS)
