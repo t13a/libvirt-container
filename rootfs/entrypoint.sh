@@ -21,7 +21,7 @@ then
     echo "${SSH_USER} ALL=(ALL) NOPASSWD: ALL" > "/etc/sudoers.d/${SSH_USER}"
 fi
 
-if [ -n "${SSH_AUTHORIZED_KEYS}" ]
+if [ -n "${SSH_AUTHORIZED_KEYS:-}" ]
 then
     sudo -u "${SSH_USER}" bash << EOF
 mkdir ~/.ssh \\
