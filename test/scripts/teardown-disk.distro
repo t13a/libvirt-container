@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+VOL_NAME="$(basename "${DISTRO_IMAGE}")"
+POOL_NAME="$(basename "$(dirname "${DISTRO_IMAGE}")")"
+
+virsh vol-delete "${VOL_NAME}" --pool "${POOL_NAME}"

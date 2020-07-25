@@ -17,6 +17,9 @@ services:
     - doc
     environment:
       CIDATA_IMAGE: /var/lib/libvirt/images/cidata.iso
+      DISTRO_NAME: 'Ubuntu 20.04 LTS'
+      DISTRO_IMAGE_URL: https://cloud-images.distro.com/focal/current/focal-server-cloudimg-amd64-disk-kvm.img
+      DISTRO_IMAGE: /var/lib/libvirt/images/distro.img
       LIBVIRT_DEFAULT_URI: qemu+ssh://doc/system
       LIBVIRT_HOST: doc
       LIBVIRT_USER: libvirt-user
@@ -36,8 +39,6 @@ services:
       ROOTFS_IMAGE: /var/lib/libvirt/images/rootfs.qcow2
       SSHPASS: libvirt-user
       TEMPLATE_DIR: /mnt/templates
-      UBUNTU_IMAGE_URL: https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img
-      UBUNTU_IMAGE: /var/lib/libvirt/images/ubuntu.img
     hostname: sut
     volumes:
     - ./e2e:/mnt/e2e:ro

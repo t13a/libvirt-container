@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
-@test "Create virtual disk (Ubuntu)" {
-    setup-disk.ubuntu
+@test "Create virtual disk (${DISTRO_NAME})" {
+    setup-disk.distro
 }
 
 @test "Create virtual disk (root filesystem)" {

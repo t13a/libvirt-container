@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if ssh "${LIBVIRT_HOST}" [ -f "${DISTRO_IMAGE}" ]
+then
+    diag echo "${DISTRO_IMAGE}: Already exists"
+    exit 0
+fi
+
+curl -L "${DISTRO_IMAGE_URL}" | push-as-root "${DISTRO_IMAGE}.part"
+ssh "${LIBVIRT_HOST}" sudo mv -f "${DISTRO_IMAGE}.part" "${DISTRO_IMAGE}"

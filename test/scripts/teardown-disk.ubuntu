@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-VOL_NAME="$(basename "${UBUNTU_IMAGE}")"
-POOL_NAME="$(basename "$(dirname "${UBUNTU_IMAGE}")")"
-
-virsh vol-delete "${VOL_NAME}" --pool "${POOL_NAME}"
