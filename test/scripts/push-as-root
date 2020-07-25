@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ssh "${LIBVIRT_HOST}" "sudo sh -c 'cat - > ${1}'"

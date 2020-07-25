@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+NETWORK_XML=~/network.xml
+
+if virsh net-info "${NETWORK_NAME}" > /dev/null 2>&1
+then
+    echo "${NETWORK_NAME}: Already exists" >&2
+    exit 0
+fi
+
+template < "${TEMPLATE_DIR}/network.xml.template" > "${NETWORK_XML}"
+
+virsh net-create "${NETWORK_XML}"

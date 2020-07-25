@@ -1,0 +1,2 @@
+instance-id: ${MACHINE_NAME}
+local-hostname: ${MACHINE_NAME}

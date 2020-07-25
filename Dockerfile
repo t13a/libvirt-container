@@ -1,14 +1,11 @@
 FROM centos:7
 
-RUN yum -y install epel-release \
-    && yum -y install \
-        expect \
-        less \
+RUN yum update -y \
+    && yum install -y epel-release \
+    && yum install -y \
         libvirt-daemon-kvm \
         openssh-clients \
         openssh-server \
-        rsync \
-        socat \
         sudo \
         supervisor \
         virt-install \
@@ -16,8 +13,10 @@ RUN yum -y install epel-release \
 
 COPY rootfs /
 
-ENV SSH_USER=user
-ENV SSH_UID=1000
-ENV SSH_GID=1000
+ENV LIBVIRT_USER_GID=1000
+ENV LIBVIRT_USER_UID=1000
+ENV LIBVIRT_USER=libvirt-user
 
-ENTRYPOINT ["/entrypoint.sh"]
+HEALTHCHECK CMD healthcheck.sh
+
+ENTRYPOINT ["entrypoint.sh"]

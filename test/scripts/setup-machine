@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if virsh desc "${MACHINE_NAME}" > /dev/null 2>&1
+then
+    echo "${MACHINE_NAME}: Already exists" >&2
+    exit 0
+fi
+
+CMD_ARGS=(
+    virt-install
+    --name "${MACHINE_NAME}"
+    --memory "${MACHINE_MEMORY}"
+    --vcpus 1
+    --os-type linux
+    --boot hd
+    --disk path="${ROOTFS_IMAGE}",format=qcow2
+    --disk path="${CIDATA_IMAGE}"
+    --network bridge="${NETWORK_DEVICE}",mac="${MACHINE_MAC}"
+    --graphics none
+    --transient
+    --noautoconsole
+)
+
+if ssh "${LIBVIRT_HOST}" [ -e /dev/kvm ]
+then
+    echo "Enable KVM" >&2
+    CMD_ARGS+=(
+        --cpu host
+        --os-variant virtio26
+    )
+fi
+
+"${CMD_ARGS[@]}"

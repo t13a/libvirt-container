@@ -1,0 +1,50 @@
+version: '3'
+services:
+  doc:
+    build: ..
+    environment:
+      LIBVIRT_USER_PASSWORD: libvirt-user
+    hostname: doc
+    privileged: true
+    volumes:
+    - libvirt_conf:/etc/libvirt
+    - libvirt_data:/var/lib/libvirt
+    - ssh_conf:/etc/ssh
+  sut:
+    build: .
+    command: ${SUT_CMD:-tail -F /dev/null}
+    depends_on:
+    - doc
+    environment:
+      CIDATA_IMAGE: /var/lib/libvirt/images/cidata.iso
+      LIBVIRT_DEFAULT_URI: qemu+ssh://doc/system
+      LIBVIRT_HOST: doc
+      LIBVIRT_USER: libvirt-user
+      MACHINE_BOOT_TIMEOUT_SECS: '120'
+      MACHINE_IPV4: '192.168.122.2'
+      MACHINE_MAC: '52:54:00:12:34:56'
+      MACHINE_MEMORY: '512'
+      MACHINE_NAME: ubuntu
+      MACHINE_PASSWORD: ubuntu
+      MACHINE_USER: ubuntu
+      NETWORK_DEVICE: virtbr0
+      NETWORK_IPV4: '192.168.122.1'
+      NETWORK_MASK_IPV4: '255.255.255.0'
+      NETWORK_MASK: '24'
+      NETWORK_NAME: default
+      PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/mnt/e2e:/mnt/scripts
+      ROOTFS_IMAGE: /var/lib/libvirt/images/rootfs.qcow2
+      SSHPASS: libvirt-user
+      TEMPLATE_DIR: /mnt/templates
+      UBUNTU_IMAGE_URL: https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img
+      UBUNTU_IMAGE: /var/lib/libvirt/images/ubuntu.img
+    hostname: sut
+    volumes:
+    - ./e2e:/mnt/e2e:ro
+    - ./scripts:/mnt/scripts:ro
+    - ./templates:/mnt/templates:ro
+    working_dir: /mnt/e2e
+volumes:
+  libvirt_conf:
+  libvirt_data:
+  ssh_conf:

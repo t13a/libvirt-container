@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+mkdir -p ~/cidata
+
+template < "${TEMPLATE_DIR}/meta-data.template" > ~/cidata/meta-data
+template < "${TEMPLATE_DIR}/network-config.template" > ~/cidata/network-config
+template < "${TEMPLATE_DIR}/user-data.template" > ~/cidata/user-data
+
+if ssh "${LIBVIRT_HOST}" [ -f "${CIDATA_IMAGE}" ] \
+&& [ "$(cd ~/cidata && sha256sum *)" = "$(ssh "${LIBVIRT_HOST}" cat "${CIDATA_IMAGE%.*}.sha256sum")" ]
+then
+    diag echo "${CIDATA_IMAGE}: Already exists"
+    exit 0
+fi
+
+genisoimage -output - -volid cidata -joliet -rock ~/cidata/* \
+| push-as-root "${CIDATA_IMAGE}"
+
+(cd ~/cidata && sha256sum *) \
+| push-as-root "${CIDATA_IMAGE%.*}.sha256sum"

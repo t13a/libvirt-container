@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SOURCE=~/.ssh/id_rsa.pub
+DEST=/home/${LIBVIRT_USER}/.ssh/authorized_keys
+
+ssh \
+    "${LIBVIRT_HOST}" \
+    "mkdir -m 755 -p $(dirname "${DEST}") && cat - > ${DEST} && chmod 644 ${DEST}" \
+    < "${SOURCE}"

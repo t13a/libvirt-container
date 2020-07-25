@@ -11,40 +11,45 @@ A Dockerfile for [Libvirt](https://libvirt.org/). A disposable virtualization in
 
 ## Prerequisites
 
-- Docker Compose 1.13+
+- Bash
+- Docker Compose
 - GNU Make
-- KVM enabled Linux (optional)
 - OpenSSH
 
 ## Getting started
 
 ### Setup
 
-Currently, SSH is the only way to communicate with the container. Password authentication can not be used. Please prepare a valid SSH key in advance. By default, the valid SSH public key is assumed to be in `~/.ssh/id_rsa.pub`. If so, setup the container is very easy.
+Currently, SSH is the only way to communicate with the container. Public key authentication and password authentication are available. By default, the valid public key is assumed to be in `~/.ssh/id_rsa.pub`. If so, setup the container is very easy.
 
 ```bash
-$ make up
+$ make all up # equivalent to `make build up`
 ```
 
 To specify another location, override `SSH_AUTHORIZED_KEYS` environment variable.
 
 ```bash
-$ make SSH_AUTHORiZED_KEYS="$(cat path/to/pub-key)" up
+$ make SSH_AUTHORIZED_KEYS="$(cat path/to/public-key)" all up
 ```
 
+If you don't have or wan't to use your public key, You can disable public key authentication and enable password authentication.
+
+```bash
+$ make LIBVIRT_USER_PASSWORD='password' SSH_AUTHORIZED_KEYS='' all up
+```
 
 ### Connect to Libvirt
 
 There are several ways to connect to Libvirt. The simplest way is to login via SSH and run virsh (Libvirt management CLI).
 
 ```bash
-$ ssh -p 2222 127.0.0.1 virsh --connect=qemu:///system
+$ ssh -p 2222 libvirt-user@127.0.0.1 virsh --connect=qemu:///system
 ```
 
 Or, if virsh is installed on your computer, the following command is equivalent to the above.
 
 ```bash
-$ virsh --connect=qemu+ssh://127.0.0.1:2222/system
+$ virsh --connect=qemu+ssh://libvirt-user@127.0.0.1:2222/system
 ```
 
 ### Teardown
@@ -65,10 +70,10 @@ $ make clean
 
 ## Development
 
-### Test
+### E2E Test
 
 We will actually provision an [Ubuntu 16.04 LTS (Xenial Xerus)](https://cloud-images.ubuntu.com/xenial/) instance and login via SSH.
 
 ```bash
-$ make all test
+$ make test
 ```

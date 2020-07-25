@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+VOL_NAME="$(basename "${ROOTFS_IMAGE}")"
+POOL_NAME="$(basename "$(dirname "${ROOTFS_IMAGE}")")"
+
+virsh vol-delete "${VOL_NAME}" --pool "${POOL_NAME}"

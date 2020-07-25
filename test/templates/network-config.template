@@ -1,0 +1,12 @@
+network:
+  version: 1
+  config:
+  - type: physical
+    name: eth0
+    mac_address: '${MACHINE_MAC}'
+    subnets:
+    - type: static
+      address: '${MACHINE_IPV4}/${NETWORK_MASK}'
+      gateway: '${NETWORK_IPV4}'
+      dns_nameservers:
+      - '${NETWORK_IPV4}'

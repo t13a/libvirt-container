@@ -1,0 +1,6 @@
+<network>
+  <name>${NETWORK_NAME}</name>
+  <bridge name="${NETWORK_DEVICE}"/>
+  <forward mode="nat"/>
+  <ip address="${NETWORK_IPV4}" netmask="${NETWORK_MASK_IPV4}"/>
+</network>

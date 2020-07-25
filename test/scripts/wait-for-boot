@@ -1,0 +1,31 @@
+#!/usr/bin/env expect
+
+set timeout $env(MACHINE_BOOT_TIMEOUT_SECS)
+
+spawn virsh console $env(MACHINE_NAME)
+
+expect {
+  eof {
+    send_user "Failed to get console (eof)"
+    exit 1
+  }
+  timeout {
+    send_user "Failed to get console (timeout)"
+    exit 1
+  }
+  "Escape character is ^]"
+}
+
+send "\n"
+
+expect {
+  eof {
+    send_user "Failed to wait for boot (eof)"
+    exit 1
+  }
+  timeout {
+    send_user "Failed to wait for boot (timeout)"
+    exit 1
+  }
+  "$env(MACHINE_NAME) login:"
+}

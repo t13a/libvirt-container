@@ -3,14 +3,13 @@ services:
   libvirt:
     build: .
     environment:
-      SSH_AUTHORIZED_KEYS: '${SSH_AUTHORIZED_KEYS}'
-      SSH_GID: '${SSH_GID}'
-      SSH_UID: '${SSH_UID}'
-      SSH_USER: '${SSH_USER}'
-    image: ${IMAGE}
+      LIBVIRT_USER_PASSWORD: '${LIBVIRT_USER_PASSWORD:-}'
+      SSH_AUTHORIZED_KEYS: '${SSH_AUTHORIZED_KEYS:-}'
+    hostname: libvirt
     ports:
-    - ${SSH_HOST_PORT}:22
+    - ${SSH_HOST_PORT:-2222}:22
     privileged: true
+    restart: unless-stopped
     volumes:
     - libvirt_conf:/etc/libvirt
     - libvirt_data:/var/lib/libvirt

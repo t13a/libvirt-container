@@ -1,0 +1,7 @@
+#cloud-config
+
+chpasswd:
+  expire: false
+password: '${MACHINE_PASSWORD}'
+ssh_authorized_keys:
+- '$(cat ~/.ssh/id_rsa.pub)'

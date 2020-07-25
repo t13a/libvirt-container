@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+virsh destroy "${MACHINE_NAME}"
