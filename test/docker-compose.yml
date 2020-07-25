@@ -18,7 +18,7 @@ services:
     environment:
       CIDATA_IMAGE: /var/lib/libvirt/images/cidata.iso
       DISTRO_NAME: 'Ubuntu 20.04 LTS'
-      DISTRO_IMAGE_URL: https://cloud-images.distro.com/focal/current/focal-server-cloudimg-amd64-disk-kvm.img
+      DISTRO_IMAGE_URL: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-disk-kvm.img
       DISTRO_IMAGE: /var/lib/libvirt/images/distro.img
       LIBVIRT_DEFAULT_URI: qemu+ssh://doc/system
       LIBVIRT_HOST: doc
