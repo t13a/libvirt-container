@@ -1,22 +1,22 @@
-# Libvirt
+# Libvirt container
 
 [![Build Status](https://travis-ci.org/t13a/dockerfile-libvirt.svg?branch=master)](https://travis-ci.org/t13a/dockerfile-libvirt)
 
-A Dockerfile for [Libvirt](https://libvirt.org/). A disposable virtualization infrastructure intended for development. **Do not use for production**.
+A containerized [Libvirt](https://libvirt.org/), disposable virtualization infrastructure intended for development. **Do not use for production**.
 
-- Based on the [official build of CentOS](https://hub.docker.com/_/centos)
+- Based on [the official image of CentOS 7](https://hub.docker.com/_/centos)
 - Use [Supervisor](http://supervisord.org/) instead of [Systemd](https://freedesktop.org/wiki/Software/systemd/)
 - Use [KVM](https://www.linux-kvm.org/page/Main_Page) if available
 - Connect via SSH
 
-## Prerequisites
+## Getting started
+
+### Prerequisites
 
 - Bash
 - Docker Compose
 - GNU Make
 - OpenSSH
-
-## Getting started
 
 ### Setup
 
@@ -72,7 +72,7 @@ $ make clean
 
 ### E2E Test
 
-We will actually provision an [Ubuntu 16.04 LTS (Xenial Xerus)](https://cloud-images.ubuntu.com/xenial/) instance and login via SSH.
+We will actually provision an [Ubuntu 20.04 LTS (Focal Fossa)](https://cloud-images.ubuntu.com/focal/) instance and login via SSH.
 
 ```bash
 $ make test
