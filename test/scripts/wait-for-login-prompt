@@ -1,8 +1,8 @@
 #!/usr/bin/env expect
 
-set timeout $env(DOMAIN_BOOT_TIMEOUT_SECS)
+set timeout $env(LOGIN_PROMPT_TIMEOUT_SECS)
 
-spawn domain-start-or-console
+spawn start-or-console-domain
 
 expect {
   eof {

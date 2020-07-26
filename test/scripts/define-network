@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+NETWORK_XML=~/network.xml
+
+eval-template < "${TEMPLATE_DIR}/network.xml.template" > "${NETWORK_XML}"
+
+virsh net-define "${NETWORK_XML}"

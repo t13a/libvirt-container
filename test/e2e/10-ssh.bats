@@ -5,8 +5,7 @@
 
     if [ -f "${SSH_SECRET_KEY}" ]
     then
-        diag echo "${SSH_SECRET_KEY}: Already exists"
-        skip
+        skip "Already exists"
     fi
 
     ssh-keygen -q -f "${SSH_SECRET_KEY}" -t rsa -N ''
@@ -17,11 +16,10 @@
 
     if [ -f "${SSH_CONFIG}" ]
     then
-        diag echo "${SSH_CONFIG}: Already exists"
-        skip
+        skip "Already exists"
     fi
 
-    template < "${TEMPLATE_DIR}/ssh-config.template" > "${SSH_CONFIG}"
+    eval-template < "${TEMPLATE_DIR}/ssh-config.template" > "${SSH_CONFIG}"
     chmod 644 "${SSH_CONFIG}"
 }
 

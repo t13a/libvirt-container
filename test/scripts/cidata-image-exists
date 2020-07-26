@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cidata-generate-files
+
+ssh "${LIBVIRT_HOST}" [ -f "${CIDATA_IMAGE}" ]
+
+LOCAL_CHECKSUM="$(cd ~/cidata && sha256sum *)"
+REMOTE_CHECKSUM="$(ssh "${LIBVIRT_HOST}" cat "${CIDATA_IMAGE%.*}.sha256sum")"
+
+[ "${LOCAL_CHECKSUM}" = "${REMOTE_CHECKSUM}" ]

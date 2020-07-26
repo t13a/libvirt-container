@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+mkdir -p ~/cidata
+
+eval-template < "${TEMPLATE_DIR}/meta-data.template" > ~/cidata/meta-data
+eval-template < "${TEMPLATE_DIR}/network-config.template" > ~/cidata/network-config
+eval-template < "${TEMPLATE_DIR}/user-data.template" > ~/cidata/user-data

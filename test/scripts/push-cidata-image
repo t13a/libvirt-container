@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cidata-generate-files
+
+genisoimage -output - -volid cidata -joliet -rock ~/cidata/* | push-as-root "${CIDATA_IMAGE}"
+
+(cd ~/cidata && sha256sum *) | push-as-root "${CIDATA_IMAGE%.*}.sha256sum"

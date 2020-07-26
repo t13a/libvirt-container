@@ -1,26 +1,23 @@
 #!/usr/bin/env bats
 
-@test "Create virtual network" {
-    setup-network
+@test "Define network" {
+    if network-is-defined
+    then
+        skip "already defined"
+    fi
+
+    define-network
 }
 
-@test "Set autostart" {
+@test "Enable network autostart" {
     virsh net-autostart "${NETWORK_NAME}"
 }
 
-@test "Start virtual network" {
-    if virsh net-list --name | grep -q "^${NETWORK_NAME}$"
+@test "Start network" {
+    if network-is-active
     then
-        skip "Network '${NETWORK_NAME}' already started"
+        skip "already started"
     fi
 
-    virsh net-start "${NETWORK_NAME}"
-}
-
-@test "Print hypervisor's addresses" {
-    diag ssh "${LIBVIRT_HOST}" /sbin/ip address
-}
-
-@test "Print hypervisor's routing table" {
-    diag ssh "${LIBVIRT_HOST}" /sbin/ip route
+    start-network
 }

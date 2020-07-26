@@ -2,16 +2,10 @@
 
 set -euo pipefail
 
-if ssh "${LIBVIRT_HOST}" [ -f "${DISTRO_IMAGE}" ]
-then
-    diag echo "${DISTRO_IMAGE}: Already exists"
-    exit 0
-fi
-
 (
     if [ -f "${DISTRO_IMAGE_CACHE}" ]
     then
-        diag echo "${DISTRO_IMAGE_CACHE}: Cache exists"
+        diag echo "Cache used"
         cat "${DISTRO_IMAGE_CACHE}"
     else
         curl -L "${DISTRO_IMAGE_URL}"

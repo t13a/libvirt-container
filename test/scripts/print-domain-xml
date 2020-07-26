@@ -11,15 +11,15 @@ CMD_ARGS=(
     --boot hd
     --disk path="${ROOTFS_IMAGE}",format=qcow2
     --disk path="${CIDATA_IMAGE}"
-    --network bridge="${NETWORK_DEVICE}",mac="${DOMAIN_NETWORK_DHCP_MAC}"
-    --network bridge="${NETWORK_DEVICE}",mac="${DOMAIN_NETWORK_STATIC_MAC}"
+    --network bridge="${NETWORK_BRIDGE_NAME}",mac="${DOMAIN_DHCP_MAC_ADDRESS}"
+    --network bridge="${NETWORK_BRIDGE_NAME}",mac="${DOMAIN_STATIC_MAC_ADDRESS}"
     --graphics none
     --print-xml
 )
 
 if ssh "${LIBVIRT_HOST}" [ -e /dev/kvm ]
 then
-    diag echo "Enable KVM" >&2
+    diag echo "KVM enabled" >&2
     CMD_ARGS+=(
         --cpu host
         --os-variant virtio26

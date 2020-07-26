@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if domain-is-active
+then
+    virsh destroy "${DOMAIN_NAME}"
+else
+    diag echo "Domain already destroyed"
+fi
+
+if domain-is-defined
+then
+    virsh undefine "${DOMAIN_NAME}"
+else
+    diag echo "Domain already undefined"
+fi
+
+if network-is-active
+then
+    virsh net-destroy "${NETWORK_NAME}"
+else
+    diag echo "Network already destroyed"
+fi
+
+if network-is-defined
+then
+    virsh net-undefine "${NETWORK_NAME}"
+else
+    diag echo "Network already undefined"
+fi
+
+if cidata-image-exists
+then
+    ssh "${LIBVIRT_HOST}" sudo rm "${CIDATA_IMAGE%.*}.sha256sum" || true
+    ssh "${LIBVIRT_HOST}" sudo rm "${CIDATA_IMAGE}"
+else
+    diag echo "Volume (cloud-init data source) already deleted"
+fi
+
+if rootfs-image-exists
+then
+    ssh "${LIBVIRT_HOST}" sudo rm "${ROOTFS_IMAGE}"
+else
+    diag echo "Volume (root filesystem) already deleted"
+fi
+
+if distro-image-exists
+then
+    ssh "${LIBVIRT_HOST}" sudo rm "${DISTRO_IMAGE}"
+else
+    diag echo "Volume (${DISTRO_NAME}) already deleted"
+fi

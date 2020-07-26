@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+virsh list --all --name | grep -q "^${DOMAIN_NAME}$"

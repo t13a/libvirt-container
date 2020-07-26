@@ -4,7 +4,7 @@ Host ${LIBVIRT_HOST}
     User ${LIBVIRT_USER}
 
 Host ${DOMAIN_NAME}
-    HostName ${DOMAIN_NETWORK_STATIC_IPV4}
+    HostName ${DOMAIN_STATIC_ADDRESS%/*}
     ProxyCommand ssh -W %h:%p ${LIBVIRT_HOST}
     StrictHostKeyChecking no
     User ${DOMAIN_USER}

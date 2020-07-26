@@ -1,10 +1,10 @@
 <network>
   <name>${NETWORK_NAME}</name>
-  <bridge name="${NETWORK_DEVICE}"/>
+  <bridge name="${NETWORK_BRIDGE_NAME}"/>
   <forward mode="nat"/>
-  <ip address="${NETWORK_IPV4}" netmask="${NETWORK_MASK_IPV4}">
+  <ip address="${NETWORK_IP_ADDRESS}" netmask="${NETWORK_IP_NETMASK}">
     <dhcp>
-      <range start="${NETWORK_DHCP_START_IPV4}" end="${NETWORK_DHCP_END_IPV4}"/>
+      <range start="${NETWORK_IP_DHCP_START}" end="${NETWORK_IP_DHCP_END}"/>
     </dhcp>
   </ip>
 </network>

@@ -19,23 +19,22 @@ services:
       DISTRO_IMAGE_URL: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-disk-kvm.img
       DISTRO_IMAGE: /var/lib/libvirt/images/distro.img
       DISTRO_NAME: 'Ubuntu 20.04 LTS'
-      DOMAIN_BOOT_TIMEOUT_SECS: '120'
+      DOMAIN_DHCP_MAC_ADDRESS: '52:54:00:12:34:56'
       DOMAIN_MEMORY: '512'
       DOMAIN_NAME: ubuntu
-      DOMAIN_NETWORK_DHCP_MAC: '52:54:00:12:34:56'
-      DOMAIN_NETWORK_STATIC_IPV4: '192.168.122.2'
-      DOMAIN_NETWORK_STATIC_MAC: '52:54:00:12:34:57'
       DOMAIN_PASSWORD: ubuntu
+      DOMAIN_STATIC_ADDRESS: '192.168.122.2/24'
+      DOMAIN_STATIC_MAC_ADDRESS: '52:54:00:12:34:57'
       DOMAIN_USER: ubuntu
       LIBVIRT_DEFAULT_URI: qemu+ssh://doc/system
       LIBVIRT_HOST: doc
       LIBVIRT_USER: libvirt-user
-      NETWORK_DEVICE: virtbr0
-      NETWORK_DHCP_END_IPV4: '192.168.122.254'
-      NETWORK_DHCP_START_IPV4: '192.168.122.128'
-      NETWORK_IPV4: '192.168.122.1'
-      NETWORK_MASK_IPV4: '255.255.255.0'
-      NETWORK_MASK: '24'
+      LOGIN_PROMPT_TIMEOUT_SECS: '120'
+      NETWORK_BRIDGE_NAME: virtbr0
+      NETWORK_IP_ADDRESS: '192.168.122.1'
+      NETWORK_IP_DHCP_END: '192.168.122.254'
+      NETWORK_IP_DHCP_START: '192.168.122.128'
+      NETWORK_IP_NETMASK: '255.255.255.0'
       NETWORK_NAME: default
       PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/mnt/e2e:/mnt/scripts
       ROOTFS_IMAGE: /var/lib/libvirt/images/rootfs.qcow2

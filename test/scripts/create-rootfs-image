@@ -2,10 +2,4 @@
 
 set -euo pipefail
 
-if ssh "${LIBVIRT_HOST}" [ -f "${ROOTFS_IMAGE}" ]
-then
-    diag echo "${ROOTFS_IMAGE}: Already exists"
-    exit 0
-fi
-
 ssh "${LIBVIRT_HOST}" sudo qemu-img create -f qcow2 -b "${DISTRO_IMAGE}" "${ROOTFS_IMAGE}"

@@ -4,7 +4,12 @@ load /opt/bats-assert/load.bash
 load /opt/bats-support/load.bash
 
 @test "Define domain" {
-    setup-machine
+    if domain-is-defined
+    then
+        skip "already defined"
+    fi
+
+    define-domain
 }
 
 @test "Enable domain autostart" {
@@ -12,12 +17,12 @@ load /opt/bats-support/load.bash
 }
 
 @test "Start domain" {
-    if virsh list --name | grep -q "^${DOMAIN_NAME}$"
+    if domain-is-active
     then
-        skip "Domain '${DOMAIN_NAME}' already started"
+        skip "already started"
     fi
 
-    run domain-wait-for-login-prompt
+    run wait-for-login-prompt
     echo "${output}" > /tmp/domain.log
     assert_success
 }
@@ -25,9 +30,4 @@ load /opt/bats-support/load.bash
 @test "Connect domain via SSH" {
     run wait-for 1 30 ssh "${DOMAIN_NAME}" true
     assert_success || fail "$(cat /tmp/domain.log)"
-}
-
-@test "Print boot log" {
-    run wait-for 1 30 ssh "${DOMAIN_NAME}" true
-    diag cat /tmp/domain.log
 }

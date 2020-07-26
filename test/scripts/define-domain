@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+DOMAIN_XML=~/domain.xml
+
+print-domain-xml > "${DOMAIN_XML}"
+
+virsh define "${DOMAIN_XML}"
