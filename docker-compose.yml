@@ -7,7 +7,7 @@ services:
       SSH_AUTHORIZED_KEYS: '${SSH_AUTHORIZED_KEYS:-}'
     hostname: libvirt
     ports:
-    - ${SSH_HOST_PORT:-2222}:22
+    - ${HOST_SSH_PORT:-2222}:22
     privileged: true
     restart: unless-stopped
     volumes:
