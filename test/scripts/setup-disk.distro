@@ -9,10 +9,10 @@ then
 fi
 
 (
-    if [ -f "${CACHED_DISTRO_IMAGE}" ]
+    if [ -f "${DISTRO_IMAGE_CACHE}" ]
     then
-        diag echo "${CACHED_DISTRO_IMAGE}: Cache exists"
-        cat "${CACHED_DISTRO_IMAGE}"
+        diag echo "${DISTRO_IMAGE_CACHE}: Cache exists"
+        cat "${DISTRO_IMAGE_CACHE}"
     else
         curl -L "${DISTRO_IMAGE_URL}"
     fi
