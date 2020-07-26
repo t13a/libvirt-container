@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-if virsh list --name | grep -q "^${MACHINE_NAME}$"
+if virsh list --name | grep -q "^${DOMAIN_NAME}$"
 then
-    virsh console --force "${MACHINE_NAME}"
+    virsh console --force "${DOMAIN_NAME}"
 else
-    virsh start --console "${MACHINE_NAME}"
+    virsh start --console "${DOMAIN_NAME}"
 fi

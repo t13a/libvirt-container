@@ -4,15 +4,15 @@ set -euo pipefail
 
 CMD_ARGS=(
     virt-install
-    --name "${MACHINE_NAME}"
-    --memory "${MACHINE_MEMORY}"
+    --name "${DOMAIN_NAME}"
+    --memory "${DOMAIN_MEMORY}"
     --vcpus 1
     --os-type linux
     --boot hd
     --disk path="${ROOTFS_IMAGE}",format=qcow2
     --disk path="${CIDATA_IMAGE}"
-    --network bridge="${NETWORK_DEVICE}",mac="${MACHINE_NETWORK_DHCP_MAC}"
-    --network bridge="${NETWORK_DEVICE}",mac="${MACHINE_NETWORK_STATIC_MAC}"
+    --network bridge="${NETWORK_DEVICE}",mac="${DOMAIN_NETWORK_DHCP_MAC}"
+    --network bridge="${NETWORK_DEVICE}",mac="${DOMAIN_NETWORK_STATIC_MAC}"
     --graphics none
     --print-xml
 )

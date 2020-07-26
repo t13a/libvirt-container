@@ -3,8 +3,8 @@ Host ${LIBVIRT_HOST}
     StrictHostKeyChecking no
     User ${LIBVIRT_USER}
 
-Host ${MACHINE_NAME}
-    HostName ${MACHINE_NETWORK_STATIC_IPV4}
+Host ${DOMAIN_NAME}
+    HostName ${DOMAIN_NETWORK_STATIC_IPV4}
     ProxyCommand ssh -W %h:%p ${LIBVIRT_HOST}
     StrictHostKeyChecking no
-    User ${MACHINE_USER}
+    User ${DOMAIN_USER}

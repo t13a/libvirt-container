@@ -1,6 +1,6 @@
 #!/usr/bin/env expect
 
-set timeout $env(MACHINE_BOOT_TIMEOUT_SECS)
+set timeout $env(DOMAIN_BOOT_TIMEOUT_SECS)
 
 spawn domain-start-or-console
 
@@ -27,5 +27,5 @@ expect {
     send_user "Failed to wait for login prompt (timeout)"
     exit 1
   }
-  "$env(MACHINE_NAME) login:"
+  "$env(DOMAIN_NAME) login:"
 }

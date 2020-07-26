@@ -15,21 +15,21 @@ services:
     - doc
     environment:
       CIDATA_IMAGE: /var/lib/libvirt/images/cidata.iso
-      DISTRO_NAME: 'Ubuntu 20.04 LTS'
       DISTRO_IMAGE_CACHE: /mnt/cache/distro.img
       DISTRO_IMAGE_URL: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-disk-kvm.img
       DISTRO_IMAGE: /var/lib/libvirt/images/distro.img
+      DISTRO_NAME: 'Ubuntu 20.04 LTS'
+      DOMAIN_BOOT_TIMEOUT_SECS: '120'
+      DOMAIN_MEMORY: '512'
+      DOMAIN_NAME: ubuntu
+      DOMAIN_NETWORK_DHCP_MAC: '52:54:00:12:34:56'
+      DOMAIN_NETWORK_STATIC_IPV4: '192.168.122.2'
+      DOMAIN_NETWORK_STATIC_MAC: '52:54:00:12:34:57'
+      DOMAIN_PASSWORD: ubuntu
+      DOMAIN_USER: ubuntu
       LIBVIRT_DEFAULT_URI: qemu+ssh://doc/system
       LIBVIRT_HOST: doc
       LIBVIRT_USER: libvirt-user
-      MACHINE_BOOT_TIMEOUT_SECS: '120'
-      MACHINE_MEMORY: '512'
-      MACHINE_NAME: ubuntu
-      MACHINE_NETWORK_DHCP_MAC: '52:54:00:12:34:56'
-      MACHINE_NETWORK_STATIC_IPV4: '192.168.122.2'
-      MACHINE_NETWORK_STATIC_MAC: '52:54:00:12:34:57'
-      MACHINE_PASSWORD: ubuntu
-      MACHINE_USER: ubuntu
       NETWORK_DEVICE: virtbr0
       NETWORK_DHCP_END_IPV4: '192.168.122.254'
       NETWORK_DHCP_START_IPV4: '192.168.122.128'

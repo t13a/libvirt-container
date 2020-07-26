@@ -2,6 +2,6 @@
 
 chpasswd:
   expire: false
-password: '${MACHINE_PASSWORD}'
+password: '${DOMAIN_PASSWORD}'
 ssh_authorized_keys:
 - '$(cat ~/.ssh/id_rsa.pub)'
