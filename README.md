@@ -1,6 +1,6 @@
 # Libvirt container
 
-[![Build Status](https://travis-ci.org/t13a/dockerfile-libvirt.svg?branch=master)](https://travis-ci.org/t13a/dockerfile-libvirt)
+[![Build Status](https://travis-ci.org/t13a/libvirt-container.svg?branch=master)](https://travis-ci.org/t13a/libvirt-container)
 
 A containerized [Libvirt](https://libvirt.org/), disposable virtualization infrastructure intended for development. **Do not use for production**.
 
