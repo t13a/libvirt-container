@@ -11,6 +11,8 @@ RUN yum update -y \
         virt-install \
     && yum clean all
 
+RUN rm /usr/share/dbus-1/system-services/org.freedesktop.{hostname1,import1,locale1,login1,machine1,systemd1,timedate1}.service
+
 COPY rootfs /
 
 ENV LIBVIRT_USER_GID=1000
