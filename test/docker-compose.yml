@@ -6,6 +6,8 @@ services:
       LIBVIRT_USER_PASSWORD: libvirt-user
     hostname: doc
     privileged: true
+    security_opt:
+    - apparmor=unconfined
   sut:
     build: .
     command: ${SUT_CMD:-tail -F /dev/null}
@@ -28,6 +30,8 @@ services:
       MACHINE_PASSWORD: ubuntu
       MACHINE_USER: ubuntu
       NETWORK_DEVICE: virtbr0
+      NETWORK_DHCP_END_IPV4: '192.168.122.254'
+      NETWORK_DHCP_START_IPV4: '192.168.122.128'
       NETWORK_IPV4: '192.168.122.1'
       NETWORK_MASK_IPV4: '255.255.255.0'
       NETWORK_MASK: '24'
