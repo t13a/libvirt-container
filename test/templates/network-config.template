@@ -3,10 +3,12 @@ network:
   config:
   - type: physical
     name: eth0
-    mac_address: '${MACHINE_MAC}'
+    mac_address: '${MACHINE_NETWORK_DHCP_MAC}'
+    subnets:
+    - type: dhcp
+  - type: physical
+    name: eth1
+    mac_address: '${MACHINE_NETWORK_STATIC_MAC}'
     subnets:
     - type: static
-      address: '${MACHINE_IPV4}/${NETWORK_MASK}'
-      gateway: '${NETWORK_IPV4}'
-      dns_nameservers:
-      - '${NETWORK_IPV4}'
+      address: '${MACHINE_NETWORK_STATIC_IPV4}/${NETWORK_MASK}'

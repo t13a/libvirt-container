@@ -17,7 +17,8 @@ CMD_ARGS=(
     --boot hd
     --disk path="${ROOTFS_IMAGE}",format=qcow2
     --disk path="${CIDATA_IMAGE}"
-    --network bridge="${NETWORK_DEVICE}",mac="${MACHINE_MAC}"
+    --network bridge="${NETWORK_DEVICE}",mac="${MACHINE_NETWORK_DHCP_MAC}"
+    --network bridge="${NETWORK_DEVICE}",mac="${MACHINE_NETWORK_STATIC_MAC}"
     --graphics none
     --transient
     --noautoconsole
