@@ -16,6 +16,7 @@ services:
     depends_on:
     - doc
     environment:
+      CACHED_DISTRO_IMAGE: /mnt/cache/distro.img
       CIDATA_IMAGE: /var/lib/libvirt/images/cidata.iso
       DISTRO_NAME: 'Ubuntu 20.04 LTS'
       DISTRO_IMAGE_URL: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-disk-kvm.img
@@ -44,6 +45,7 @@ services:
     - ./e2e:/mnt/e2e:ro
     - ./scripts:/mnt/scripts:ro
     - ./templates:/mnt/templates:ro
+    - ${CACHED_DISTRO_IMAGE:-/dev/null}:/mnt/cache/distro.img:ro
     working_dir: /mnt/e2e
 volumes:
   libvirt_conf:

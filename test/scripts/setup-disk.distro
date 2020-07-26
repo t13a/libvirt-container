@@ -8,5 +8,14 @@ then
     exit 0
 fi
 
-curl -L "${DISTRO_IMAGE_URL}" | push-as-root "${DISTRO_IMAGE}.part"
+(
+    if [ -f "${CACHED_DISTRO_IMAGE}" ]
+    then
+        diag echo "${CACHED_DISTRO_IMAGE}: Cache exists"
+        cat "${CACHED_DISTRO_IMAGE}"
+    else
+        curl -L "${DISTRO_IMAGE_URL}"
+    fi
+) | push-as-root "${DISTRO_IMAGE}.part"
+
 ssh "${LIBVIRT_HOST}" sudo mv -f "${DISTRO_IMAGE}.part" "${DISTRO_IMAGE}"
