@@ -6,10 +6,6 @@ services:
       LIBVIRT_USER_PASSWORD: libvirt-user
     hostname: doc
     privileged: true
-    volumes:
-    - libvirt_conf:/etc/libvirt
-    - libvirt_data:/var/lib/libvirt
-    - ssh_conf:/etc/ssh
   sut:
     build: .
     command: ${SUT_CMD:-tail -F /dev/null}
@@ -47,7 +43,3 @@ services:
     - ./templates:/mnt/templates:ro
     - ${CACHED_DISTRO_IMAGE:-/dev/null}:/mnt/cache/distro.img:ro
     working_dir: /mnt/e2e
-volumes:
-  libvirt_conf:
-  libvirt_data:
-  ssh_conf:
