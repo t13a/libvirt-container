@@ -9,7 +9,6 @@ services:
     ports:
     - ${HOST_SSH_PORT:-2222}:22
     privileged: true
-    restart: unless-stopped
     volumes:
     - libvirt_conf:/etc/libvirt
     - libvirt_data:/var/lib/libvirt
