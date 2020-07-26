@@ -1,16 +1,17 @@
 
 .PHONY: all
-all: build
+all: build e2e
 
 .PHONY: build
 build:
-	docker-compose build
+	docker-compose build --parallel --pull
 
 .PHONY: e2e
 e2e:
 	env SUT_CMD='bats -T .' docker-compose up \
 		--abort-on-container-exit \
 		--exit-code-from sut
+	docker-compose down
 
 .PHONY: up
 up:
@@ -26,4 +27,4 @@ exec:
 
 .PHONY: clean
 clean:
-	docker-compose down --rmi local -v
+	docker-compose down --rmi local

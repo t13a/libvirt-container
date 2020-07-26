@@ -5,15 +5,11 @@ all: build
 
 .PHONY: build
 build:
-	docker-compose build
+	docker-compose build --parallel --pull
 
 .PHONY: test
 test:
-	cd test && $(MAKE) all e2e
-
-.PHONY: test/clean
-test/clean:
-	cd test && $(MAKE) clean
+	cd test && $(MAKE)
 
 .PHONY: up
 up:
@@ -28,6 +24,6 @@ exec:
 	docker-compose exec -u libvirt-user libvirt bash
 
 .PHONY: clean
-clean: init test/clean
+clean:
+	cd test && $(MAKE) clean
 	docker-compose down --rmi local -v
-	rm -rf .env
