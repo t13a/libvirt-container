@@ -5,7 +5,7 @@ all: build
 
 .PHONY: build
 build:
-	docker-compose build --parallel --pull
+	docker-compose build --pull
 
 .PHONY: test
 test:

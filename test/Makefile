@@ -4,7 +4,7 @@ all: build e2e
 
 .PHONY: build
 build:
-	docker-compose build --parallel --pull
+	docker-compose build --pull
 
 .PHONY: e2e
 e2e:
