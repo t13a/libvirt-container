@@ -19,6 +19,6 @@ ENV LIBVIRT_USER_GID=1000
 ENV LIBVIRT_USER_UID=1000
 ENV LIBVIRT_USER=libvirt-user
 
-HEALTHCHECK CMD healthcheck.sh
+HEALTHCHECK CMD /healthcheck.sh
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
