@@ -4,12 +4,12 @@ set -euo pipefail
 
 NETWORK_XML=~/network.xml
 
-if virsh net-info "${NETWORK_NAME}" > /dev/null 2>&1
+if virsh net-list --all --name | grep -q "^${NETWORK_NAME}$"
 then
-    echo "${NETWORK_NAME}: Already exists" >&2
+    echo "${NETWORK_NAME}: Network already exists" >&2
     exit 0
 fi
 
 template < "${TEMPLATE_DIR}/network.xml.template" > "${NETWORK_XML}"
 
-virsh net-create "${NETWORK_XML}"
+virsh net-define "${NETWORK_XML}"

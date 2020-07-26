@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if virsh list --name | grep -q "^${MACHINE_NAME}$"
+then
+    virsh console --force "${MACHINE_NAME}"
+else
+    virsh start --console "${MACHINE_NAME}"
+fi
