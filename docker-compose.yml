@@ -5,7 +5,6 @@ services:
     environment:
       LIBVIRT_USER_PASSWORD: '${LIBVIRT_USER_PASSWORD:-}'
       SSH_AUTHORIZED_KEYS: '${SSH_AUTHORIZED_KEYS:-}'
-    hostname: libvirt
     ports:
     - ${HOST_SSH_PORT:-2222}:22
     privileged: true
