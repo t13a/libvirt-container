@@ -29,7 +29,7 @@ services:
       LIBVIRT_DEFAULT_URI: qemu+ssh://doc/system
       LIBVIRT_HOST: doc
       LIBVIRT_USER: libvirt-user
-      LOGIN_PROMPT_TIMEOUT_SECS: '120'
+      LOGIN_PROMPT_TIMEOUT_SECS: '300'
       NETWORK_BRIDGE_NAME: virtbr0
       NETWORK_IP_ADDRESS: '192.168.122.1'
       NETWORK_IP_DHCP_END: '192.168.122.254'
