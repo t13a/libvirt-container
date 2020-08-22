@@ -72,7 +72,7 @@ $ make clean
 
 ### E2E Test
 
-We will actually provision an [Ubuntu 20.04 LTS (Focal Fossa)](https://cloud-images.ubuntu.com/focal/) instance and login via SSH.
+We will actually provision an [Ubuntu 16.04 LTS (Xenial Xerus)](https://cloud-images.ubuntu.com/xenial/) instance and login via SSH.
 
 ```bash
 $ make test

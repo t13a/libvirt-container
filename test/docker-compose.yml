@@ -16,9 +16,9 @@ services:
     environment:
       CIDATA_IMAGE: /var/lib/libvirt/images/cidata.iso
       DISTRO_IMAGE_CACHE: /mnt/cache/distro.img
-      DISTRO_IMAGE_URL: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-disk-kvm.img
+      DISTRO_IMAGE_URL: https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img
       DISTRO_IMAGE: /var/lib/libvirt/images/distro.img
-      DISTRO_NAME: 'Ubuntu 20.04 LTS'
+      DISTRO_NAME: 'Ubuntu 16.04 LTS'
       DOMAIN_DHCP_MAC_ADDRESS: '52:54:00:12:34:56'
       DOMAIN_MEMORY: '512'
       DOMAIN_NAME: ubuntu
