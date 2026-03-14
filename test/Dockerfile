@@ -9,7 +9,9 @@ RUN apt-get update \
         git \
         libvirt-clients \
         make \
+        netcat-openbsd \
         openssh-client \
+        qemu-utils \
         sshpass \
         virtinst \
     && rm -rf /var/lib/apt/lists/*
