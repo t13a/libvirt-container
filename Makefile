@@ -5,7 +5,7 @@ all: build
 
 .PHONY: build
 build:
-	docker-compose build --pull
+	docker compose build --pull
 
 .PHONY: test
 test:
@@ -13,17 +13,17 @@ test:
 
 .PHONY: up
 up:
-	docker-compose up -d
+	docker compose up -d
 
 .PHONY: down
 down:
-	docker-compose down
+	docker compose down
 
 .PHONY: exec
 exec:
-	docker-compose exec -u libvirt-user libvirt bash
+	docker compose exec -u libvirt-user libvirt bash
 
 .PHONY: clean
 clean:
 	cd test && $(MAKE) clean
-	docker-compose down --rmi local -v
+	docker compose down --rmi local -v

@@ -7,7 +7,6 @@ CMD_ARGS=(
     --name "${DOMAIN_NAME}"
     --memory "${DOMAIN_MEMORY}"
     --vcpus 1
-    --os-type linux
     --boot hd
     --disk path="${ROOTFS_IMAGE}",format=qcow2
     --disk path="${CIDATA_IMAGE}"
@@ -22,7 +21,7 @@ then
     diag echo "KVM enabled" >&2
     CMD_ARGS+=(
         --cpu host
-        --os-variant virtio26
+        --os-variant ubuntu24.04
     )
 fi
 

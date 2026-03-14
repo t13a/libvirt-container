@@ -1,23 +1,24 @@
-FROM centos:7
+FROM debian:trixie-slim
 
-RUN yum update -y \
-    && yum install -y epel-release \
-    && yum install -y \
-        libvirt-daemon-kvm \
-        openssh-clients \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        dbus \
+        libvirt-daemon-system \
+        libvirt-daemon-driver-qemu \
+        qemu-system-x86 \
+        openssh-client \
         openssh-server \
         sudo \
         supervisor \
-        virt-install \
-    && yum clean all
-
-RUN rm /usr/share/dbus-1/system-services/org.freedesktop.{hostname1,import1,locale1,login1,machine1,systemd1,timedate1}.service
+    && rm -rf /var/lib/apt/lists/*
 
 COPY rootfs /
 
 ENV LIBVIRT_USER_GID=1000
 ENV LIBVIRT_USER_UID=1000
 ENV LIBVIRT_USER=libvirt-user
+
+VOLUME /var/run/libvirt
 
 HEALTHCHECK CMD /healthcheck.sh
 

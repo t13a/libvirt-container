@@ -1,25 +1,26 @@
-FROM centos:7
+FROM debian:trixie-slim
 
-RUN yum update -y \
-    && yum install -y epel-release \
-    && yum install -y \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
         bash \
+        curl \
         expect \
+        genisoimage \
         git \
-        libvirt-client \
+        libvirt-clients \
         make \
-        openssh-clients \
+        openssh-client \
         sshpass \
-        virt-install \
-    && yum clean all
+        virtinst \
+    && rm -rf /var/lib/apt/lists/*
 
-ARG BATS_CORE_BRANCH=v1.2.1
+ARG BATS_CORE_BRANCH=v1.11.0
 ARG BATS_CORE_REPOSITORY=https://github.com/bats-core/bats-core
 
-ARG BATS_ASSERT_BRANCH=v2.0.0
+ARG BATS_ASSERT_BRANCH=v2.1.0
 ARG BATS_ASSERT_REPOSITORY=https://github.com/bats-core/bats-assert
 
-ARG BATS_FILE_BRANCH=v0.3.0
+ARG BATS_FILE_BRANCH=v0.4.0
 ARG BATS_FILE_REPOSITORY=https://github.com/bats-core/bats-file
 
 ARG BATS_SUPPORT_BRANCH=v0.3.0

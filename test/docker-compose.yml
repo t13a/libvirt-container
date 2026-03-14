@@ -8,6 +8,11 @@ services:
     privileged: true
     security_opt:
     - apparmor=unconfined
+    volumes:
+    - libvirt_conf:/etc/libvirt
+    - libvirt_data:/var/lib/libvirt
+    - libvirt_run:/var/run/libvirt
+    - ssh_conf:/etc/ssh
   sut:
     build: .
     command: ${SUT_CMD:-tail -F /dev/null}
@@ -16,9 +21,9 @@ services:
     environment:
       CIDATA_IMAGE: /var/lib/libvirt/images/cidata.iso
       DISTRO_IMAGE_CACHE: /mnt/cache/distro.img
-      DISTRO_IMAGE_URL: https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img
+      DISTRO_IMAGE_URL: https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
       DISTRO_IMAGE: /var/lib/libvirt/images/distro.img
-      DISTRO_NAME: 'Ubuntu 16.04 LTS'
+      DISTRO_NAME: 'Ubuntu 24.04 LTS'
       DOMAIN_DHCP_MAC_ADDRESS: '52:54:00:12:34:56'
       DOMAIN_MEMORY: '512'
       DOMAIN_NAME: ubuntu
@@ -26,7 +31,7 @@ services:
       DOMAIN_STATIC_ADDRESS: '192.168.122.2/24'
       DOMAIN_STATIC_MAC_ADDRESS: '52:54:00:12:34:57'
       DOMAIN_USER: ubuntu
-      LIBVIRT_DEFAULT_URI: qemu+ssh://doc/system
+      LIBVIRT_DEFAULT_URI: qemu:///system
       LIBVIRT_HOST: doc
       LIBVIRT_USER: libvirt-user
       LOGIN_PROMPT_TIMEOUT_SECS: '300'
@@ -42,8 +47,14 @@ services:
       TEMPLATE_DIR: /mnt/templates
     hostname: sut
     volumes:
+    - libvirt_run:/var/run/libvirt
     - ./e2e:/mnt/e2e:ro
     - ./scripts:/mnt/scripts:ro
     - ./templates:/mnt/templates:ro
     - ${HOST_DISTRO_IMAGE:-/dev/null}:/mnt/cache/distro.img:ro # specified host file is used as cache
     working_dir: /mnt/e2e
+volumes:
+  libvirt_conf:
+  libvirt_data:
+  libvirt_run:
+  ssh_conf:

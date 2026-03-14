@@ -13,8 +13,10 @@ services:
     volumes:
     - libvirt_conf:/etc/libvirt
     - libvirt_data:/var/lib/libvirt
+    - libvirt_run:/var/run/libvirt
     - ssh_conf:/etc/ssh
 volumes:
   libvirt_conf:
   libvirt_data:
+  libvirt_run:
   ssh_conf:
