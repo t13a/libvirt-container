@@ -1,0 +1,30 @@
+services:
+  libvirt:
+    build:
+      context: ../..
+    privileged: true
+    security_opt:
+      - apparmor=unconfined
+    environment:
+      - LIBVIRT_USER_PASSWORD=test
+    healthcheck:
+      test: ["CMD", "su", "healthcheck", "-c", "virsh connect"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+      start_period: 10s
+
+  test-runner:
+    build:
+      context: .
+    depends_on:
+      libvirt:
+        condition: service_healthy
+    volumes:
+      - ../../molecule:/home/testrunner/molecule:ro
+    environment:
+      - LIBVIRT_HOST=libvirt
+      - LIBVIRT_USER=libvirt-user
+      - LIBVIRT_USER_PASSWORD=test
+    working_dir: /home/testrunner
+    command: molecule test --destroy never -s default

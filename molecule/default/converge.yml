@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: libvirt_hosts
+  gather_facts: false
+  tasks:
+    - name: Wait for SSH port
+      ansible.builtin.wait_for_connection:
+        timeout: 30

@@ -1,0 +1,12 @@
+---
+- name: Verify
+  hosts: libvirt_hosts
+  gather_facts: false
+  tasks:
+    # --- 1. SSH Connectivity ---
+    - name: "1.1 Wait for SSH port"
+      ansible.builtin.wait_for_connection:
+        timeout: 30
+
+    - name: "1.2 Verify SSH password authentication"
+      ansible.builtin.ping:

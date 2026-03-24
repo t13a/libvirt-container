@@ -21,4 +21,7 @@ clean:
 	docker compose down -v --rmi all --remove-orphans
 
 test:
-	@echo "TODO: implement test target"
+	docker compose -f molecule/default/docker-compose.yml up --build --abort-on-container-exit --exit-code-from test-runner
+
+test-clean:
+	docker compose -f molecule/default/docker-compose.yml down -v --rmi all --remove-orphans
