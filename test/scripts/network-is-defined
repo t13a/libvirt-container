@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-virsh net-list --all --name | grep -q "^${NETWORK_NAME}$"

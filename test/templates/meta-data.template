@@ -1,2 +1,0 @@
-instance-id: ${DOMAIN_NAME}
-local-hostname: ${DOMAIN_NAME}

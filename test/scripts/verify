@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-[ "$(sha256sum < ${1})" = "$(ssh "${LIBVIRT_HOST}" "sha256sum < ${2}")" ]
