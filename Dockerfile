@@ -8,6 +8,8 @@ RUN apt-get update && apt-get install -y \
     virt-install \
     libvirt-clients \
     qemu-utils \
+    curl \
+    genisoimage \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
