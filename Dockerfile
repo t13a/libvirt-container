@@ -15,5 +15,7 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 COPY docker-entrypoint.d/ /docker-entrypoint.d/
 RUN chmod +x /docker-entrypoint.sh
 
+HEALTHCHECK CMD su healthcheck -c 'virsh connect'
+
 STOPSIGNAL SIGRTMIN+3
 ENTRYPOINT ["/docker-entrypoint.sh"]
