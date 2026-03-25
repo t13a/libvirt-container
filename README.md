@@ -121,7 +121,3 @@ ssh -J libvirt-user@127.0.0.1:2222 guest-user@<guest-ip>
 - [Container Image Specification](docs/container-spec.md)
 - [Test Specification](docs/test-spec.md)
 - [Implementation Plan](docs/implementation-plan.md)
-
-## License
-
-GPL v2
