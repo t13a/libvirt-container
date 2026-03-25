@@ -1,79 +1,123 @@
-# Libvirt container
+# libvirt-container
 
-[![Build Status](https://travis-ci.org/t13a/libvirt-container.svg?branch=master)](https://travis-ci.org/t13a/libvirt-container)
+Containerized [Libvirt](https://libvirt.org/) environment for disposable virtualization infrastructure. Run KVM-based virtual machines inside a Docker container without installing libvirt on the host system.
 
-A containerized [Libvirt](https://libvirt.org/), disposable virtualization infrastructure intended for development. **Do not use for production**.
+**This project is intended for development use only.**
 
-- Based on [the official image of CentOS 7](https://hub.docker.com/_/centos)
-- Use [Supervisor](http://supervisord.org/) instead of [Systemd](https://freedesktop.org/wiki/Software/systemd/)
-- Use [KVM](https://www.linux-kvm.org/page/Main_Page) if available
-- Connect via SSH
+## Architecture
 
-## Getting started
-
-### Prerequisites
-
-- Bash
-- Docker Compose
-- GNU Make
-- OpenSSH
-
-### Setup
-
-Currently, SSH is the only way to communicate with the container. Public key authentication and password authentication are available. By default, the valid public key is assumed to be in `~/.ssh/id_rsa.pub`. If so, setup the container is very easy.
-
-```bash
-$ make all up # equivalent to `make build up`
+```
+┌─────────────────────────────────────────────────────────────┐
+│ Host Machine                                                │
+│                                                             │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │ Docker Container (privileged)                          │ │
+│  │                                                        │ │
+│  │  SystemD (PID 1)                                       │ │
+│  │    ├── libvirt daemon + related services                │ │
+│  │    ├── SSH server                                      │ │
+│  │    └── ...                                             │ │
+│  │                                                        │ │
+│  │  ┌──────────────────────────────────────────────────┐  │ │
+│  │  │ Guest VM (QEMU/KVM)                              │  │ │
+│  │  │  - Managed by libvirt                            │  │ │
+│  │  │  - NAT networking via virtual bridge             │  │ │
+│  │  │  - Accessible via SSH (ProxyJump through host)   │  │ │
+│  │  └──────────────────────────────────────────────────┘  │ │
+│  │                                                        │ │
+│  └──────────────────┬─────────────────────────────────────┘ │
+│                     │                                       │
+│              Port mapping                                   │
+│          (host:2222 → container:22)                         │
+│                     │                                       │
+│              /dev/kvm (if available)                         │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-To specify another location, override `SSH_AUTHORIZED_KEYS` environment variable.
+## Quick Start
 
 ```bash
-$ make SSH_AUTHORIZED_KEYS="$(cat path/to/public-key)" all up
+# Build the image
+make build
+
+# Start the container (with SSH public key authentication)
+make up
+
+# Or with password authentication
+LIBVIRT_USER_PASSWORD=mypassword make up
+
+# Access the container
+ssh -p 2222 libvirt-user@127.0.0.1
+
+# Use virsh remotely
+virsh --connect=qemu+ssh://libvirt-user@127.0.0.1:2222/system list --all
+
+# Stop the container
+make down
 ```
 
-If you don't have or wan't to use your public key, You can disable public key authentication and enable password authentication.
+## Requirements
+
+- Docker with Docker Compose
+- `/dev/kvm` for hardware acceleration (optional; falls back to QEMU emulation)
+
+## Make Targets
+
+| Target   | Description                                    |
+|----------|------------------------------------------------|
+| `build`  | Build the Docker image                         |
+| `up`     | Start the container in the background          |
+| `down`   | Stop the container (preserves volumes)         |
+| `exec`   | Open an interactive shell inside the container |
+| `test`   | Run the E2E test suite                         |
+| `clean`  | Remove images, containers, and volumes         |
+
+## Environment Variables
+
+| Variable               | Default        | Description                                     |
+|------------------------|----------------|-------------------------------------------------|
+| `LIBVIRT_USER`         | `libvirt-user` | Application user name                           |
+| `LIBVIRT_USER_UID`     | `1000`         | Application user UID                            |
+| `LIBVIRT_USER_GID`     | `1000`         | Application user GID                            |
+| `LIBVIRT_USER_PASSWORD` | _(unset)_     | If set, configures the user's password          |
+| `SSH_AUTHORIZED_KEYS`   | _(unset)_     | If set, installs SSH public key(s) for the user |
+| `SSH_PORT`             | `2222`         | Host port mapped to container SSH (port 22)     |
+
+By default, `SSH_AUTHORIZED_KEYS` is populated from `~/.ssh/id_rsa.pub` when using the Makefile.
+
+## Authentication
+
+Two methods are supported for SSH access:
+
+- **Public key authentication**: SSH public keys are injected via `SSH_AUTHORIZED_KEYS` at container startup.
+- **Password authentication**: Enabled when `LIBVIRT_USER_PASSWORD` is set.
+
+Both methods can be used simultaneously.
+
+## Accessing Guest VMs
+
+Guest VMs running inside the container can be reached via SSH using `ProxyJump`:
 
 ```bash
-$ make LIBVIRT_USER_PASSWORD='password' SSH_AUTHORIZED_KEYS='' all up
+ssh -J libvirt-user@127.0.0.1:2222 guest-user@<guest-ip>
 ```
 
-### Connect to Libvirt
+## Tech Stack
 
-There are several ways to connect to Libvirt. The simplest way is to login via SSH and run virsh (Libvirt management CLI).
+| Component        | Technology                                         |
+|------------------|----------------------------------------------------|
+| Base image       | Debian 13 (trixie)                                 |
+| Init system      | SystemD                                            |
+| Hypervisor       | QEMU/KVM (falls back to QEMU emulation if no KVM) |
+| VM management    | Libvirt (Debian 13 official packages)              |
+| Remote access    | OpenSSH server                                     |
+| Container engine | Docker with Docker Compose                         |
+| Build tool       | GNU Make                                           |
+| Test framework   | Ansible + Molecule                                 |
 
-```bash
-$ ssh -p 2222 libvirt-user@127.0.0.1 virsh --connect=qemu:///system
-```
+## Documentation
 
-Or, if virsh is installed on your computer, the following command is equivalent to the above.
-
-```bash
-$ virsh --connect=qemu+ssh://libvirt-user@127.0.0.1:2222/system
-```
-
-### Teardown
-
-To stop the container, execute the following command.
-
-```bash
-$ make down
-```
-
-You can return to the previous state by executing `make up` command again.
-
-To erase everything including Docker image and volumes, execute the following command.
-
-```bash
-$ make clean
-```
-
-## Development
-
-### E2E Test
-
-We will actually provision an [Ubuntu 16.04 LTS (Xenial Xerus)](https://cloud-images.ubuntu.com/xenial/) instance and login via SSH.
-
-```bash
-$ make test
-```
+- [Architecture Overview](docs/architecture.md)
+- [Container Image Specification](docs/container-spec.md)
+- [Test Specification](docs/test-spec.md)
+- [Implementation Plan](docs/implementation-plan.md)

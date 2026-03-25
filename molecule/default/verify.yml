@@ -1,0 +1,315 @@
+---
+- name: Verify
+  hosts: libvirt_hosts
+  gather_facts: false
+  vars:
+    libvirt_user: "{{ ansible_user }}"
+    libvirt_connect_uri: "qemu:///system"
+    # Network
+    network_name: default
+    bridge_name: virbr0
+    network_address: "192.168.122.1"
+    netmask: "255.255.255.0"
+    dhcp_start: "192.168.122.128"
+    dhcp_end: "192.168.122.254"
+    # Guest VM
+    domain_name: debian
+    domain_memory: 512
+    domain_vcpus: 1
+    domain_user: debian
+    domain_password: debian
+    dhcp_mac: "52:54:00:12:34:56"
+    static_mac: "52:54:00:12:34:57"
+    static_address: "192.168.122.2/24"
+    static_ip: "192.168.122.2"
+    cloud_image_url: "https://cloud.debian.org/images/cloud/trixie/daily/latest/debian-13-generic-amd64-daily.qcow2"
+    cloud_image_path: "/var/lib/libvirt/images/debian-13-generic-amd64.qcow2"
+    boot_image_path: "/var/lib/libvirt/images/{{ domain_name }}.qcow2"
+    cidata_dir: "/var/lib/libvirt/images/cidata"
+    cidata_iso_path: "/var/lib/libvirt/images/{{ domain_name }}-cidata.iso"
+    # Timeouts
+    ssh_timeout: 30
+    libvirt_timeout: 30
+    vm_login_timeout: 300
+    guest_ssh_timeout: 30
+
+  tasks:
+    # =================================================================
+    # 1. SSH Connectivity
+    # =================================================================
+    - name: "1.1 Wait for SSH port"
+      ansible.builtin.wait_for_connection:
+        timeout: "{{ ssh_timeout }}"
+
+    - name: "1.2 Verify SSH password authentication"
+      ansible.builtin.ping:
+
+    - name: "1.3 Generate SSH keypair on test runner"
+      delegate_to: localhost
+      ansible.builtin.command:
+        cmd: ssh-keygen -t rsa -N "" -f /home/testrunner/.ssh/id_rsa
+        creates: /home/testrunner/.ssh/id_rsa
+
+    - name: "1.3 Read test runner public key"
+      delegate_to: localhost
+      ansible.builtin.slurp:
+        src: /home/testrunner/.ssh/id_rsa.pub
+      register: test_runner_pubkey
+
+    - name: "1.3 Register SSH public key on libvirt host"
+      ansible.builtin.authorized_key:
+        user: "{{ libvirt_user }}"
+        key: "{{ test_runner_pubkey.content | b64decode }}"
+        state: present
+
+    - name: "1.4 Verify SSH public key authentication"
+      ansible.builtin.ping:
+      vars:
+        ansible_password: ""
+        ansible_ssh_private_key_file: /home/testrunner/.ssh/id_rsa
+
+    # =================================================================
+    # 2. Libvirt Connectivity
+    # =================================================================
+    - name: "2.1 Verify libvirt is ready"
+      ansible.builtin.command:
+        cmd: "virsh --connect={{ libvirt_connect_uri }} connect"
+      changed_when: false
+      register: virsh_connect
+      retries: 6
+      delay: 5
+      until: virsh_connect.rc == 0
+
+    # =================================================================
+    # 3. Disk Image Management
+    # =================================================================
+    - name: "3.1 Download cloud image"
+      ansible.builtin.command:
+        cmd: >
+          sudo curl -fSL -o {{ cloud_image_path }}
+          {{ cloud_image_url }}
+        creates: "{{ cloud_image_path }}"
+      register: download_result
+
+    - name: "3.1 Verify cloud image exists"
+      ansible.builtin.stat:
+        path: "{{ cloud_image_path }}"
+      register: cloud_image_stat
+
+    - name: "3.1 Assert cloud image downloaded"
+      ansible.builtin.assert:
+        that: cloud_image_stat.stat.exists
+
+    - name: "3.2 Create backing image"
+      ansible.builtin.command:
+        cmd: >
+          sudo qemu-img create -f qcow2
+          -b {{ cloud_image_path }} -F qcow2
+          {{ boot_image_path }}
+        creates: "{{ boot_image_path }}"
+
+    - name: "3.2 Verify backing image exists"
+      ansible.builtin.stat:
+        path: "{{ boot_image_path }}"
+      register: boot_image_stat
+
+    - name: "3.2 Assert backing image created"
+      ansible.builtin.assert:
+        that: boot_image_stat.stat.exists
+
+    - name: "3.3 Create cloud-init data directory"
+      ansible.builtin.file:
+        path: "{{ cidata_dir }}"
+        state: directory
+        mode: "0755"
+      become: true
+
+    - name: "3.3 Create cloud-init meta-data"
+      ansible.builtin.copy:
+        dest: "{{ cidata_dir }}/meta-data"
+        content: |
+          instance-id: {{ domain_name }}
+          local-hostname: {{ domain_name }}
+        mode: "0644"
+      become: true
+
+    - name: "3.3 Create cloud-init network-config"
+      ansible.builtin.copy:
+        dest: "{{ cidata_dir }}/network-config"
+        content: |
+          network:
+            version: 2
+            ethernets:
+              eth0:
+                match:
+                  macaddress: '{{ dhcp_mac }}'
+                dhcp4: true
+              eth1:
+                match:
+                  macaddress: '{{ static_mac }}'
+                addresses:
+                - '{{ static_address }}'
+        mode: "0644"
+      become: true
+
+    - name: "3.3 Create cloud-init user-data"
+      ansible.builtin.copy:
+        dest: "{{ cidata_dir }}/user-data"
+        content: |
+          #cloud-config
+
+          chpasswd:
+            expire: false
+          password: '{{ domain_password }}'
+          ssh_authorized_keys:
+          - '{{ test_runner_pubkey.content | b64decode | trim }}'
+        mode: "0644"
+      become: true
+
+    - name: "3.3 Create cloud-init ISO"
+      ansible.builtin.command:
+        cmd: >
+          sudo genisoimage -output {{ cidata_iso_path }}
+          -volid cidata -joliet -rock
+          {{ cidata_dir }}/meta-data
+          {{ cidata_dir }}/network-config
+          {{ cidata_dir }}/user-data
+        creates: "{{ cidata_iso_path }}"
+
+    - name: "3.3 Verify cloud-init ISO exists"
+      ansible.builtin.stat:
+        path: "{{ cidata_iso_path }}"
+      register: cidata_iso_stat
+
+    - name: "3.3 Assert cloud-init ISO created"
+      ansible.builtin.assert:
+        that: cidata_iso_stat.stat.exists
+
+    # =================================================================
+    # 4. Network Management
+    # =================================================================
+    - name: "4.1 Define NAT network"
+      ansible.builtin.command:
+        cmd: >
+          virsh --connect={{ libvirt_connect_uri }} net-define /dev/stdin
+        stdin: |
+          <network>
+            <name>{{ network_name }}</name>
+            <bridge name="{{ bridge_name }}"/>
+            <forward mode="nat"/>
+            <ip address="{{ network_address }}" netmask="{{ netmask }}">
+              <dhcp>
+                <range start="{{ dhcp_start }}" end="{{ dhcp_end }}"/>
+              </dhcp>
+            </ip>
+          </network>
+      register: net_define
+      changed_when: "'defined' in net_define.stdout"
+      failed_when: net_define.rc != 0 and 'already exists' not in net_define.stderr
+
+    - name: "4.2 Enable network autostart"
+      ansible.builtin.command:
+        cmd: "virsh --connect={{ libvirt_connect_uri }} net-autostart {{ network_name }}"
+      changed_when: false
+
+    - name: "4.3 Start network"
+      ansible.builtin.command:
+        cmd: "virsh --connect={{ libvirt_connect_uri }} net-start {{ network_name }}"
+      register: net_start
+      changed_when: "'started' in net_start.stdout"
+      failed_when: net_start.rc != 0 and 'already active' not in net_start.stderr
+
+    - name: "4.3 Verify network is active"
+      ansible.builtin.command:
+        cmd: "virsh --connect={{ libvirt_connect_uri }} net-info {{ network_name }}"
+      register: net_info
+      changed_when: false
+
+    - name: "4.3 Assert network is active"
+      ansible.builtin.assert:
+        that: "'Active:         yes' in net_info.stdout"
+
+    # =================================================================
+    # 5. VM Domain Management
+    # =================================================================
+    - name: "5.1 Check KVM availability"
+      ansible.builtin.stat:
+        path: /dev/kvm
+      register: kvm_device
+
+    - name: "5.1 Set virt type"
+      ansible.builtin.set_fact:
+        virt_type: "{{ 'kvm' if kvm_device.stat.exists else 'qemu' }}"
+
+    - name: "5.1 Define domain"
+      ansible.builtin.command:
+        cmd: >
+          sudo virt-install
+          --connect={{ libvirt_connect_uri }}
+          --name={{ domain_name }}
+          --memory={{ domain_memory }}
+          --vcpus={{ domain_vcpus }}
+          --virt-type={{ virt_type }}
+          --graphics=none
+          --os-variant=generic
+          --machine=pc
+          --import
+          --disk=path={{ boot_image_path }},format=qcow2
+          --disk=path={{ cidata_iso_path }},device=cdrom
+          --network=bridge={{ bridge_name }},mac={{ dhcp_mac }}
+          --network=bridge={{ bridge_name }},mac={{ static_mac }}
+          --noautoconsole
+          --print-xml
+      register: domain_xml
+      changed_when: false
+
+    - name: "5.1 Define domain from XML"
+      ansible.builtin.command:
+        cmd: "virsh --connect={{ libvirt_connect_uri }} define /dev/stdin"
+        stdin: "{{ domain_xml.stdout }}"
+      register: domain_define
+      changed_when: "'defined' in domain_define.stdout"
+      failed_when: domain_define.rc != 0 and 'already exists' not in domain_define.stderr
+
+    - name: "5.2 Enable domain autostart"
+      ansible.builtin.command:
+        cmd: "virsh --connect={{ libvirt_connect_uri }} autostart {{ domain_name }}"
+      changed_when: false
+
+    - name: "5.3 Start domain"
+      ansible.builtin.command:
+        cmd: "virsh --connect={{ libvirt_connect_uri }} start {{ domain_name }}"
+      register: domain_start
+      changed_when: "'started' in domain_start.stdout"
+      failed_when: domain_start.rc != 0 and 'already active' not in domain_start.stderr
+
+    - name: "5.3 Wait for VM to boot"
+      ansible.builtin.command:
+        cmd: "virsh --connect={{ libvirt_connect_uri }} domstate {{ domain_name }}"
+      register: domain_state
+      retries: "{{ (vm_login_timeout / 10) | int }}"
+      delay: 10
+      until: domain_state.stdout | trim == 'running'
+      changed_when: false
+
+    - name: "5.4 Install test runner SSH key for libvirt user"
+      ansible.builtin.copy:
+        src: /home/testrunner/.ssh/id_rsa
+        dest: "/home/{{ libvirt_user }}/.ssh/id_rsa"
+        owner: "{{ libvirt_user }}"
+        mode: "0600"
+      become: true
+
+    - name: "5.4 SSH to guest VM via libvirt host"
+      ansible.builtin.command:
+        cmd: >
+          ssh -i /home/{{ libvirt_user }}/.ssh/id_rsa
+          -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+          -o ConnectTimeout=5
+          {{ domain_user }}@{{ static_ip }}
+          echo "Guest SSH OK"
+      register: guest_ssh
+      retries: "{{ (vm_login_timeout / 10) | int }}"
+      delay: 10
+      until: guest_ssh.rc == 0
+      changed_when: false

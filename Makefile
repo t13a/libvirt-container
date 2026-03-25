@@ -1,29 +1,27 @@
-export SSH_AUTHORIZED_KEYS := $(shell cat ~/.ssh/id_rsa.pub)
+SSH_AUTHORIZED_KEYS ?= $(shell cat ~/.ssh/id_rsa.pub 2>/dev/null)
+export SSH_AUTHORIZED_KEYS
 
-.PHONY: all
+.PHONY: all build up down exec clean test
+
 all: build
 
-.PHONY: build
 build:
-	docker-compose build --pull
+	docker compose build
 
-.PHONY: test
-test:
-	cd test && $(MAKE)
-
-.PHONY: up
 up:
-	docker-compose up -d
+	docker compose up -d
 
-.PHONY: down
 down:
-	docker-compose down
+	docker compose down
 
-.PHONY: exec
 exec:
-	docker-compose exec -u libvirt-user libvirt bash
+	docker compose exec libvirt bash
 
-.PHONY: clean
 clean:
-	cd test && $(MAKE) clean
-	docker-compose down --rmi local -v
+	docker compose down -v --rmi all --remove-orphans
+
+test:
+	docker compose -f molecule/default/docker-compose.yml up --build --abort-on-container-exit --exit-code-from test-runner
+
+test-clean:
+	docker compose -f molecule/default/docker-compose.yml down -v --rmi all --remove-orphans

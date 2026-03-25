@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-ssh "${LIBVIRT_HOST}" [ -f "${ROOTFS_IMAGE}" ]

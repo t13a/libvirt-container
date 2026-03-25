@@ -1,24 +1,23 @@
-FROM centos:7
+FROM debian:trixie
 
-RUN yum update -y \
-    && yum install -y epel-release \
-    && yum install -y \
-        libvirt-daemon-kvm \
-        openssh-clients \
-        openssh-server \
-        sudo \
-        supervisor \
-        virt-install \
-    && yum clean all
+RUN apt-get update && apt-get install -y \
+    libvirt-daemon-system \
+    qemu-system-x86 \
+    openssh-server \
+    sudo \
+    virt-install \
+    libvirt-clients \
+    qemu-utils \
+    curl \
+    genisoimage \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN rm /usr/share/dbus-1/system-services/org.freedesktop.{hostname1,import1,locale1,login1,machine1,systemd1,timedate1}.service
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY docker-entrypoint.d/ /docker-entrypoint.d/
+RUN chmod +x /docker-entrypoint.sh
 
-COPY rootfs /
+HEALTHCHECK CMD su healthcheck -c 'virsh connect'
 
-ENV LIBVIRT_USER_GID=1000
-ENV LIBVIRT_USER_UID=1000
-ENV LIBVIRT_USER=libvirt-user
-
-HEALTHCHECK CMD /healthcheck.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
+STOPSIGNAL SIGRTMIN+3
+ENTRYPOINT ["/docker-entrypoint.sh"]

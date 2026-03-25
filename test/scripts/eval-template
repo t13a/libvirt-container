@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-EOF="${EOF:-EOF}"
-
-eval "cat << ${EOF}
-$(cat -)
-${EOF}"

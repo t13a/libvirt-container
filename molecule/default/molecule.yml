@@ -1,0 +1,22 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: default
+  options:
+    managed: false
+platforms:
+  - name: libvirt
+    groups:
+      - libvirt_hosts
+provisioner:
+  name: ansible
+  inventory:
+    host_vars:
+      libvirt:
+        ansible_host: "${LIBVIRT_HOST:-libvirt}"
+        ansible_user: "${LIBVIRT_USER:-libvirt-user}"
+        ansible_password: "${LIBVIRT_USER_PASSWORD:-test}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+verifier:
+  name: ansible
