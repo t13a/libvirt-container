@@ -130,7 +130,7 @@ Libvirt-container は、開発用途の使い捨て仮想化基盤を Docker コ
 
 ### 実装時の知見
 
-- **マシンタイプ**: `--os-variant=debian12` は Q35 マシンタイプを選択するが、Debian 13 cloud image のカーネルブートに失敗する。`--os-variant=generic --machine=pc` (i440fx) で解決。
+- **ヘッドレスでの起動**: Debian 13 cloud image の GRUB は、BIOS ではビデオデバイスがないと VM のリセットを繰り返す。当初は `--os-variant=generic --machine=pc` (i440fx) で解決したと考えたが、効いていたのはマシンタイプではなく、`generic` で選ばれる IDE ディスクだった (#3)。テストの VM は UEFI (`--boot=uefi`) で起動し、Q35 と virtio ディスクのまま回避する。
 - **cloud-init ISO**: `genisoimage -volid cidata -joliet -rock` でファイル名が正しく保持される。
 - **guest SSH 待ち時間**: cloud-init の初期化に約50秒かかるため、適切なリトライ設定が必要。
 
