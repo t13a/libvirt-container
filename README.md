@@ -70,20 +70,18 @@ make down
 | `down`   | Stop the container (preserves volumes)         |
 | `exec`   | Open an interactive shell inside the container |
 | `test`   | Run the E2E test suite                         |
+| `test-clean` | Remove the containers, images, and volumes of the test |
 | `clean`  | Remove images, containers, and volumes         |
 
 ## Environment Variables
 
-| Variable               | Default        | Description                                     |
-|------------------------|----------------|-------------------------------------------------|
-| `LIBVIRT_USER`         | `libvirt-user` | Application user name                           |
-| `LIBVIRT_USER_UID`     | `1000`         | Application user UID                            |
-| `LIBVIRT_USER_GID`     | `1000`         | Application user GID                            |
-| `LIBVIRT_USER_PASSWORD` | _(unset)_     | If set, configures the user's password          |
-| `SSH_AUTHORIZED_KEYS`   | _(unset)_     | If set, installs SSH public key(s) for the user |
-| `SSH_PORT`             | `2222`         | Host port mapped to container SSH (port 22)     |
+| Variable                | Default   | Description                                            |
+|-------------------------|-----------|--------------------------------------------------------|
+| `LIBVIRT_USER_PASSWORD` | _(unset)_ | If set, sets the password of `libvirt-user`            |
+| `SSH_AUTHORIZED_KEYS`   | _(unset)_ | If set, installs SSH public key(s) for `libvirt-user`  |
+| `SSH_PORT`              | `2222`    | Host port mapped to container SSH (port 22)            |
 
-By default, `SSH_AUTHORIZED_KEYS` is populated from `~/.ssh/id_rsa.pub` when using the Makefile.
+By default, `SSH_AUTHORIZED_KEYS` is populated from `~/.ssh/id_rsa.pub` when using the Makefile. The container installs the keys each time it starts, so start it with `make up`: `docker compose up` alone passes no keys, and the container then accepts only a password.
 
 ## Authentication
 
@@ -94,12 +92,33 @@ Two methods are supported for SSH access:
 
 Both methods can be used simultaneously.
 
+## Volumes
+
+Named volumes keep what should survive `make down`, which `make clean` deletes:
+
+| Mount point        | Holds                                                    |
+|--------------------|----------------------------------------------------------|
+| `/etc/libvirt`     | The configuration of libvirt                             |
+| `/var/lib/libvirt` | VM disk images, network definitions, and other state     |
+| `/etc/ssh`         | The SSH host keys, so the container keeps its host key   |
+
 ## Accessing Guest VMs
 
 Guest VMs running inside the container can be reached via SSH using `ProxyJump`:
 
 ```bash
 ssh -J libvirt-user@127.0.0.1:2222 guest-user@<guest-ip>
+```
+
+## Published Image
+
+Each release publishes the image to `ghcr.io/t13a/libvirt-container`, under its version, such as `0.1.0`, and as `latest`. To run it without this repository, give `docker run` what `docker-compose.yml` gives:
+
+```bash
+docker run -d --name libvirt --privileged --security-opt apparmor=unconfined -p 2222:22 \
+  -v libvirt_conf:/etc/libvirt -v libvirt_data:/var/lib/libvirt -v ssh_conf:/etc/ssh \
+  -e SSH_AUTHORIZED_KEYS="$(cat ~/.ssh/id_rsa.pub)" \
+  ghcr.io/t13a/libvirt-container
 ```
 
 ## Tech Stack
@@ -115,9 +134,6 @@ ssh -J libvirt-user@127.0.0.1:2222 guest-user@<guest-ip>
 | Build tool       | GNU Make                                           |
 | Test framework   | Ansible + Molecule                                 |
 
-## Documentation
+## Development
 
-- [Architecture Overview](docs/architecture.md)
-- [Container Image Specification](docs/container-spec.md)
-- [Test Specification](docs/test-spec.md)
-- [Implementation Plan](docs/implementation-plan.md)
+[AGENTS.md](AGENTS.md) describes how the container works, and how to develop and test it.
