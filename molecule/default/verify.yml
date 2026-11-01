@@ -251,8 +251,8 @@
           --vcpus={{ domain_vcpus }}
           --virt-type={{ virt_type }}
           --graphics=none
-          --os-variant=generic
-          --machine=pc
+          --os-variant=debian13
+          --boot=uefi
           --import
           --disk=path={{ boot_image_path }},format=qcow2
           --disk=path={{ cidata_iso_path }},device=cdrom
